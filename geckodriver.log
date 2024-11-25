@@ -56,3 +56,4 @@ jQuery.fn.ready@https://code.jquery.com/jquery-3.6.0.slim.js:4072:4
 [Parent 168953, IPC I/O Parent] WARNING: waitid failed pid:169205 errno:10: file /builds/worker/checkouts/gecko/ipc/chromium/src/base/process_util_posix.cc:244
 [Parent 168953, IPC I/O Parent] WARNING: waitid failed pid:169200 errno:10: file /builds/worker/checkouts/gecko/ipc/chromium/src/base/process_util_posix.cc:244
 [Parent 168953, IPC I/O Parent] WARNING: waitid failed pid:169024 errno:10: file /builds/worker/checkouts/gecko/ipc/chromium/src/base/process_util_posix.cc:244
+1732505005223	geckodriver	INFO	Listening on 127.0.0.1:39403
