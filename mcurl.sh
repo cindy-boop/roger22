@@ -135,13 +135,13 @@ fi
 
 if [ "$size_in_byte" -gt 1900000000 ]; then
     printf "\e[31mContent length exceeds 1.9 GB. Download canceled.\e[0m\n"
-    exit 1
+    exit 0
 fi
 
 
 if [ "$size_in_byte" -lt 300000000 ]; then
     printf "\e[33mContent length is less than 300 MB. Download skipped.\e[0m\n"
-    exit 1
+    exit 0
 fi
 
 size_per_slice=$(($size_in_byte/$slices))
