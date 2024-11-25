@@ -162,32 +162,6 @@ def direct_download(url, slug):
         except Exception as G:
             print(f"{GREEN}Lagi nungguin tombol download..{NC}")
 
-
-def telegram_sender():
-    A = TelegramClient("iuploadyou", api_id, api_hash)
-
-    @A.on(events.NewMessage(from_users=recipient))
-    async def C(event):
-        B = event
-        print(f"Received message from bot: {B.message.message}")
-        if B.message.media:
-            await A.send_file(group_id, B.message.media, caption=B.message.message)
-
-    async def B():
-        await A.start()
-        D = open(_D, "r").read().splitlines()
-        for E in D:
-            B = E.split(",")
-            F = [A for A in B if _C in A]
-            C = [A for A in B if _K in A]
-            if C:
-                time.sleep(5)
-                await A.send_message(recipient, f"/start {C[0].split("id=")[-1]}")
-
-    with A:
-        A.loop.run_until_complete(B())
-
-
 def get_top_movie():
     B = "https://tv.lk21official.pics/top-movie-today"
     C = 1134
