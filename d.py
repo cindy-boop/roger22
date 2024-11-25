@@ -181,7 +181,7 @@ def telegram_sender():
             C = [A for A in B if _K in A]
             if C:
                 time.sleep(5)
-                await A.send_message(recipient, f"/start {C[0].split("id=")[-1]}")
+                await A.send_message(recipient, f"/start {C[0].split('id=')[-1]}")
 
     with A:
         A.loop.run_until_complete(B())
