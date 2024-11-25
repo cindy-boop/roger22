@@ -112,27 +112,6 @@ def get_lk21_slug():
             except Exception as G:
                 print(G)
 
-
-def get_lk21_download_url():
-    F = open("slug.sorted.txt", "r").read().splitlines()
-    A = get_page_source()
-    B = 0
-    for G in F:
-        B += 1
-        C = G.rstrip("/").split("/")[-1]
-        H = f"https://dl.lk21.party/get/{C}/"
-        if B % 10 == 0:
-            print(B, "deleting cookies..")
-            A.delete_all_cookies()
-        A.get(H)
-        I = A.page_source
-        D = get_download_url(I)
-        if D:
-            with open(_D, "a+") as E:
-                E.write(f"{C},{",".join([A for A in D])}")
-                E.write(_B)
-
-
 def get_file_size_in_mb(file_path):
     A = os.path.getsize(file_path)
     B = A / 1048576
