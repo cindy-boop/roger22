@@ -9,7 +9,8 @@ _D = "links.txt"
 _C = "filemoon.in"
 _B = "\n"
 _A = "href"
-import bs4, time, os, subprocess, json
+
+import bs4, time, os, subprocess
 from telethon import TelegramClient, types, events
 from selenium import webdriver
 from selenium.webdriver.firefox.service import Service as FirefoxService
@@ -23,7 +24,7 @@ import redis
 r = redis.Redis(
   host='profound-wasp-43736.upstash.io',
   port=6379,
-  password="AarYAAIjcDExNDc3N2RlZTM1Y2I0MWVhOThkMTJhNzk5MjUyODUzYnAxMA",
+  password='AarYAAIjcDExNDc3N2RlZTM1Y2I0MWVhOThkMTJhNzk5MjUyODUzYnAxMA',
   ssl=True
 )
 
@@ -181,7 +182,7 @@ def telegram_sender():
             C = [A for A in B if _K in A]
             if C:
                 time.sleep(5)
-                await A.send_message(recipient, f"/start {C[0].split('id=')[-1]}")
+                await A.send_message(recipient, f"/start {C[0].split("id=")[-1]}")
 
     with A:
         A.loop.run_until_complete(B())
@@ -214,9 +215,10 @@ def download():
     for B in L:
         C += 1
         M = B[0]
-        adaga=r.get(M)
+        
+        adaga = r.get(M)
         if adaga:
-            print(f"{RED} skipping {M} {NC}", C)
+            print(f"{RED} skipping {M}{NC}", C)
             continue
         I = [A for A in B if _C in A]
         N = [A for A in B if _K in A]
@@ -235,7 +237,7 @@ def download():
 
                     slug = K.split('.mp4')[0]
                     r.set(slug, 'done')
-                    subprocess.Popen(["./upload/main", K])
+                    subprocess.Popen(["./upload/main" , K])
                 except AssertionError:
                     print(f"download {RED} error {NC} ko")
             os.remove(D)
@@ -274,5 +276,3 @@ def download():
 
 if __name__ == "__main__":
     download()
-    # r.set('neck deep', json.dumps({"title":"december"}))
-
