@@ -22,10 +22,10 @@ from selenium.webdriver.common.by import By
 import redis
 
 r = redis.Redis(
-  host='profound-wasp-43736.upstash.io',
-  port=6379,
-  password='AarYAAIjcDExNDc3N2RlZTM1Y2I0MWVhOThkMTJhNzk5MjUyODUzYnAxMA',
-  ssl=True
+    host="profound-wasp-43736.upstash.io",
+    port=6379,
+    password="AarYAAIjcDExNDc3N2RlZTM1Y2I0MWVhOThkMTJhNzk5MjUyODUzYnAxMA",
+    ssl=True,
 )
 
 api_id = os.getenv("API_ID")
@@ -33,7 +33,7 @@ api_hash = os.getenv("API_HASH")
 recipient = ""
 group_id = ""
 GREEN = "\x1b[0;32m"
-RED="\x1b[0;31m"
+RED = "\x1b[0;31m"
 NC = "\x1b[0m"
 
 
@@ -112,6 +112,7 @@ def get_lk21_slug():
             except Exception as G:
                 print(G)
 
+
 def get_file_size_in_mb(file_path):
     A = os.path.getsize(file_path)
     B = A / 1048576
@@ -141,6 +142,7 @@ def direct_download(url, slug):
         except Exception as G:
             print(f"{GREEN}Lagi nungguin tombol download..{NC}")
 
+
 def get_top_movie():
     B = "https://tv.lk21official.pics/top-movie-today"
     C = 1134
@@ -168,7 +170,7 @@ def download():
     for B in L:
         C += 1
         M = B[0]
-        
+
         adaga = r.get(M)
         if adaga:
             print(f"{RED} skipping {M}{NC}", C)
@@ -188,9 +190,9 @@ def download():
                         os.system(f'bash mcurl.sh -s 8 -o "{K}" "{O}"') == 0
                     ), "download error"
 
-                    slug = K.split('.mp4')[0]
-                    r.set(slug, 'done')
-                    subprocess.Popen(["./upload/main" , K])
+                    slug = K.split(".mp4")[0]
+                    r.set(slug, "done")
+                    subprocess.Popen(["python", "main.py", K])
                 except AssertionError:
                     print(f"download {RED} error {NC} ko")
             os.remove(D)
