@@ -27,4 +27,3 @@ urllib3==2.2.3
 websocket-client==1.8.0
 websockets
 wsproto==1.2.0
-redis
