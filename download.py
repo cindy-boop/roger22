@@ -134,7 +134,7 @@ def download_files(download_urls, slugs, driver):
 
                 # Execute the download command
                 result = os.system(
-                    f"bash mcurl.sh -s 8 -o '{filename}' '{download_link}'"
+                    f"bash mcurl.sh -s 16 -o '{filename}' '{download_link}'"
                 )
 
                 if result == 0:
