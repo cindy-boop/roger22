@@ -156,6 +156,9 @@ def download_files(download_urls, slugs, driver):
                         # Handle the error as needed
 
                     # Continue with the rest of your code here
+                elif result == 1:
+                    store_slug(slug)
+                    
                 else:
                     log.error(f"Download failed for {slug} with status: {result}")
 
