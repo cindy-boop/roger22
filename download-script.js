@@ -1,6 +1,27 @@
 const { chromium, firefox } = require("playwright-core");
 const { solve } = require("recaptcha-solver");
 
+
+async function mulung(url, page) {
+    await page.goto(EXAMPLE_PAGE);
+    await solve(page);
+
+    let downloadUrl = null;
+    while (!downloadUrl) {
+        // Extract the download URL
+        downloadUrl = await page.evaluate(() => {
+            const linkElement = document.querySelector('a.button[download]'); // Update selector as needed
+            return linkElement ? linkElement.href : null;
+        });
+
+        if (!downloadUrl) {
+            console.log("Download URL not found, refreshing...");
+            await page.reload({ waitUntil: 'networkidle' });
+            await page.waitForTimeout(2000); // Wait for 2 seconds before checking again
+        }
+    }
+    console.log(downloadUrl);
+}
 async function main() {
     const EXAMPLE_PAGE = process.argv[2];
     if (!EXAMPLE_PAGE) {
@@ -8,55 +29,16 @@ async function main() {
         process.exit(1);
     }
 
-    const browser = await firefox.launch({ headless: false });
+    const browser = await chromium.launch({ headless: false });
     const page = await browser.newPage();
 
     try {
-        await page.goto(EXAMPLE_PAGE);
-        await solve(page);
-
-        // Submit the form
-        await page.$eval("#F1", form => form.submit());
-
-        // Wait for navigation after form submission
-        await page.waitForNavigation({ waitUntil: 'networkidle' });
-
-        let downloadUrl = null;
-        
-        // Loop until the download URL appears
-        while (!downloadUrl) {
-            // Extract the download URL
-            downloadUrl = await page.evaluate(() => {
-                const linkElement = document.querySelector('a.button[download]'); // Update selector as needed
-                return linkElement ? linkElement.href : null;
-            });
-
-            if (!downloadUrl) {
-                console.log("Download URL not found, refreshing...");
-                await page.reload({ waitUntil: 'networkidle' });
-                await page.waitForTimeout(2000); // Wait for 2 seconds before checking again
-            }
-        }
-        console.log(downloadUrl);
+        await mulung(EXAMPLE_PAGE, page)
 
     } catch (error) {
-        console.error("An error occurred:", error);
-    } finally {
-        while (!downloadUrl) {
-            // Extract the download URL
-            downloadUrl = await page.evaluate(() => {
-                const linkElement = document.querySelector('a.button[download]'); // Update selector as needed
-                return linkElement ? linkElement.href : null;
-            });
+        await mulung(EXAMPLE_PAGE, page)
 
-            if (!downloadUrl) {
-                console.log("Download URL not found, refreshing...");
-                await page.reload({ waitUntil: 'networkidle' });
-                await page.waitForTimeout(2000); // Wait for 2 seconds before checking again
-            }
-        }
-        console.log(downloadUrl);
-    }
+    } 
 }
 
 main();
