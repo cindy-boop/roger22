@@ -104,25 +104,80 @@ def store_slug(slug):
         json=params,
     )
 
+# def download_files(download_urls, slugs, driver):
+#     """Download the files using the given download URLs."""
+
+#     log = ini_logger('DOWNLOAD')
+#     for download_url, slug in zip(download_urls, slugs):
+#         filemoon_download_url = download_url.replace("filemoon.in", "filemoon.sx")
+        
+#         # Loop until a valid download URL is retrieved
+#         while True:
+#             result = subprocess.run(["node", "download-script.js", filemoon_download_url], capture_output=True, text=True)
+#             download_url = result.stdout.strip()
+#             log.info("Download URL:", download_url)
+
+#             if download_url:  # Check if a valid download URL is returned
+#                 filename = f"{slug}.mp4"
+
+#                 # Execute the download command
+#                 result = os.system(
+#                     f"bash mcurl.sh -s 16 -o '{filename}' '{download_url}'"
+#                 )
+
+#                 if result == 0:
+#                     log.info(f"Downloaded: {filename}")
+#                     store_slug(slug)  # Store the slug after successful download
+#                     # Start the upload script
+#                     process = subprocess.Popen(["python", "upload.py", filename])
+
+#                     # Wait for a short time to check if the process has started
+#                     time.sleep(1)  # Adjust the sleep time as necessary
+
+#                     # Check if the process is still running
+#                     if process.poll() is None:
+#                         log.info("Upload script started successfully.")
+#                     else:
+#                         time.sleep(5)
+#                         log.error("Failed to start upload script.")
+#                         break
+#                         # Handle the error as needed
+#             else:
+#                 log.warning(f"Waiting for download link for {slug}...")
+#                 time.sleep(5)  # Wait before trying again
+
 def download_files(download_urls, slugs, driver):
     """Download the files using the given download URLs."""
 
     log = ini_logger('DOWNLOAD')
     for download_url, slug in zip(download_urls, slugs):
         filemoon_download_url = download_url.replace("filemoon.in", "filemoon.sx")
-        
-        # Loop until a valid download URL is retrieved
-        while True:
-            result = subprocess.run(["node", "download-script.js", filemoon_download_url], capture_output=True, text=True)
-            download_url = result.stdout.strip()
-            log.info("Download URL:", download_url)
+        driver.get(filemoon_download_url)
+        driver.set_window_size(667, 920)
 
-            if download_url:  # Check if a valid download URL is returned
+
+
+        while True:
+            try:
+                # Check if the page title indicates a not found page
+                if "Not Found" in driver.title:
+                    log.error(f"Download page not found for {slug}. Skipping.")
+                    break
+
+                # Wait until the download link is present
+                element = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.CSS_SELECTOR, "a.button[download]")
+                    )
+                )
+
+                log.info(f"Download link appeared for {slug}.")
+                download_link = element.get_attribute("href")
                 filename = f"{slug}.mp4"
 
                 # Execute the download command
                 result = os.system(
-                    f"bash mcurl.sh -s 16 -o '{filename}' '{download_url}'"
+                    f"bash mcurl.sh -s 16 -o '{filename}' '{download_link}'"
                 )
 
                 if result == 0:
@@ -142,77 +197,22 @@ def download_files(download_urls, slugs, driver):
                         log.error("Failed to start upload script.")
                         break
                         # Handle the error as needed
-            else:
-                log.warning(f"Waiting for download link for {slug}...")
-                time.sleep(5)  # Wait before trying again
 
-# def download_files(download_urls, slugs, driver):
-#     """Download the files using the given download URLs."""
+                    # Continue with the rest of your code here
 
-#     log = ini_logger('DOWNLOAD')
-#     for download_url, slug in zip(download_urls, slugs):
-#         filemoon_download_url = download_url.replace("filemoon.in", "filemoon.sx")
-        # driver.get(filemoon_download_url)
-        # driver.set_window_size(667, 920)
+                else:
+                    log.error(f"Download failed for {slug} with status: {result}")
+                    store_slug(slug)
 
-
-
-        # while True:
-        #     try:
-        #         # Check if the page title indicates a not found page
-        #         if "Not Found" in driver.title:
-        #             log.error(f"Download page not found for {slug}. Skipping.")
-        #             break
-
-        #         # Wait until the download link is present
-        #         element = WebDriverWait(driver, 10).until(
-        #             EC.presence_of_element_located(
-        #                 (By.CSS_SELECTOR, "a.button[download]")
-        #             )
-        #         )
-
-        #         log.info(f"Download link appeared for {slug}.")
-        #         download_link = element.get_attribute("href")
-        #         filename = f"{slug}.mp4"
-
-        #         # Execute the download command
-        #         result = os.system(
-        #             f"bash mcurl.sh -s 16 -o '{filename}' '{download_link}'"
-        #         )
-
-        #         if result == 0:
-        #             log.info(f"Downloaded: {filename}")
-        #             store_slug(slug)  # Store the slug after successful download
-        #             # Start the upload script
-        #             process = subprocess.Popen(["python", "upload.py", filename])
-
-        #             # Wait for a short time to check if the process has started
-        #             time.sleep(1)  # Adjust the sleep time as necessary
-
-        #             # Check if the process is still running
-        #             if process.poll() is None:
-        #                 log.info("Upload script started successfully.")
-        #             else:
-        #                 time.sleep(5)
-        #                 log.error("Failed to start upload script.")
-        #                 break
-        #                 # Handle the error as needed
-
-        #             # Continue with the rest of your code here
-
-        #         else:
-        #             log.error(f"Download failed for {slug} with status: {result}")
-        #             store_slug(slug)
-
-        #         break  # Exit the loop if the element is found
-        #     except Exception as e:
-        #         log.warning(f"Lagi nungguin download link nya {slug}")
+                break  # Exit the loop if the element is found
+            except Exception as e:
+                log.warning(f"Lagi nungguin download link nya {slug}")
 
 
 def download():
     urls = read_urls("downlinks.txt")
-    # driver = get_page_source()  # Assuming this initializes your Selenium WebDriver
-    driver = None
+    driver = get_page_source()  # Assuming this initializes your Selenium WebDriver
+    # driver = None
 
     download_urls = []
     slugs = []
