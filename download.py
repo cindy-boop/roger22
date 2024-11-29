@@ -111,7 +111,7 @@ def download_files(download_urls, slugs, driver):
 
 
 def download():
-    urls = read_urls("download_links.txt")
+    urls = read_urls("downlinks.txt")
     driver = get_page_source()  # Assuming this initializes your Selenium WebDriver
 
     download_urls = []
@@ -156,5 +156,5 @@ def download():
 
 
 # Example of how to call the function
-# download()
+download()
 
