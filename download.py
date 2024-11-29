@@ -220,7 +220,14 @@ def get_download_urls(download_urls, slugs, driver):
             except Exception as e:
                 log.warning(f"Lagi nungguin download link nya {slug}")
 
-        download(urls)
+        # Check if we have collected 7 URLs
+        if len(urls) >= 7:
+            log.info(
+                f"Collected {len(urls)} download URLs. Starting downloads..."
+            )
+            download(urls)
+            # Reset the lists after downloading
+            urls = []
 
 def prepare_slug():
     urls = read_urls("downlinks.txt")
