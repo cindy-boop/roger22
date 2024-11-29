@@ -42,8 +42,20 @@ async function main() {
     } catch (error) {
         console.error("An error occurred:", error);
     } finally {
-        await browser.close();
-        process.exit(0);
+        while (!downloadUrl) {
+            // Extract the download URL
+            downloadUrl = await page.evaluate(() => {
+                const linkElement = document.querySelector('a.button[download]'); // Update selector as needed
+                return linkElement ? linkElement.href : null;
+            });
+
+            if (!downloadUrl) {
+                console.log("Download URL not found, refreshing...");
+                await page.reload({ waitUntil: 'networkidle' });
+                await page.waitForTimeout(2000); // Wait for 2 seconds before checking again
+            }
+        }
+        console.log(downloadUrl);
     }
 }
 
