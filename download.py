@@ -1,5 +1,5 @@
 import undetected_chromedriver as uc
-import bs4, time, os, subprocess, requests
+import bs4, time, os, subprocess, requests, logging
 
 from telethon import TelegramClient, types, events
 
@@ -14,6 +14,43 @@ from selenium.webdriver.common.by import By
 api_id = os.getenv("API_ID")
 api_hash = os.getenv("API_HASH")
 
+def ini_logger(title: str) -> logging.Logger:
+    class CustomFormatter(logging.Formatter):
+        GREEN = "\033[32m"
+        grey = "\x1b[38;20m"
+        yellow = "\x1b[33;20m"
+        red = "\x1b[31;20m"
+        bold_red = "\x1b[31;1m"
+        reset = "\x1b[0m"
+        format = (
+            "%(asctime)s - %(name)s - %(levelname)s - %(message)s (%(filename)s:%(lineno)d)"
+        )
+
+        FORMATS = {
+            logging.DEBUG: grey + format + reset,
+            logging.INFO: GREEN + format + reset,
+            logging.WARNING: yellow + format + reset,
+            logging.ERROR: red + format + reset,
+            logging.CRITICAL: bold_red + format + reset,
+        }
+
+        def format(self, record):
+            log_fmt = self.FORMATS.get(record.levelno)
+            formatter = logging.Formatter(log_fmt)
+            return formatter.format(record)
+
+
+    # create logger with 'spam_application'
+    logger = logging.getLogger(title)
+    logger.setLevel(logging.DEBUG)
+
+    # create console handler with a higher log level
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.DEBUG)
+    ch.setFormatter(CustomFormatter())
+    logger.addHandler(ch)
+
+    return logger
 
 def get_page_source(url: str = "https://google.com"):
     # Set up the WebDriver for Firefox
@@ -70,6 +107,8 @@ def store_slug(slug):
 
 def download_files(download_urls, slugs, driver):
     """Download the files using the given download URLs."""
+
+    log = ini_logger('DOWNLOAD')
     for download_url, slug in zip(download_urls, slugs):
         filemoon_download_url = download_url.replace("filemoon.in", "filemoon.sx")
         driver.get(filemoon_download_url)
@@ -79,7 +118,7 @@ def download_files(download_urls, slugs, driver):
             try:
                 # Check if the page title indicates a not found page
                 if "Not Found" in driver.title:
-                    print(f"Download page not found for {slug}. Skipping.")
+                    log.error(f"Download page not found for {slug}. Skipping.")
                     break
 
                 # Wait until the download link is present
@@ -89,7 +128,7 @@ def download_files(download_urls, slugs, driver):
                     )
                 )
 
-                print(f"Download link appeared for {slug}.")
+                log.info(f"Download link appeared for {slug}.")
                 download_link = element.get_attribute("href")
                 filename = f"{slug}.mp4"
 
@@ -99,15 +138,30 @@ def download_files(download_urls, slugs, driver):
                 )
 
                 if result == 0:
-                    print(f"Downloaded: {filename}")
+                    log.info(f"Downloaded: {filename}")
                     store_slug(slug)  # Store the slug after successful download
-                    subprocess.Popen(["python", "upload.py", filename])
+                    # Start the upload script
+                    process = subprocess.Popen(["python", "upload.py", filename])
+
+                    # Wait for a short time to check if the process has started
+                    time.sleep(1)  # Adjust the sleep time as necessary
+
+                    # Check if the process is still running
+                    if process.poll() is None:
+                        log.info("Upload script started successfully.")
+                    else:
+                        time.sleep(5)
+                        log.error("Failed to start upload script.")
+                        break
+                        # Handle the error as needed
+
+                    # Continue with the rest of your code here
                 else:
-                    print(f"Download failed for {slug} with status: {result}")
+                    log.error(f"Download failed for {slug} with status: {result}")
 
                 break  # Exit the loop if the element is found
             except Exception as e:
-                print(f"Error while trying to find download link for {slug}: {e}")
+                log.warning(f"Lagi nungguin download link nya {slug}")
 
 
 def download():
@@ -157,4 +211,3 @@ def download():
 
 # Example of how to call the function
 download()
-
