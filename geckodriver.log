@@ -1,0 +1,37 @@
+1732850895541	geckodriver	INFO	Listening on 127.0.0.1:60431
+1732850896099	mozrunner::runner	INFO	Running command: MOZ_CRASHREPORTER="1" MOZ_CRASHREPORTER_NO_REPORT="1" MOZ_CRASHREPORTER_SHUTDOWN="1" MOZ_NO_REMOTE="1" "/usr ... te" "--remote-debugging-port" "60073" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofilec2zaPL"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1732850896999	Marionette	INFO	Marionette enabled
+1732850897179	Marionette	INFO	Listening on port 33899
+Read port: 33899
+WebDriver BiDi listening on ws://127.0.0.1:60073
+1732850897260	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+JavaScript error: resource://gre/modules/XULStore.sys.mjs, line 60: Error: Can't find profile directory.
+DevTools listening on ws://127.0.0.1:60073/devtools/browser/7b423d49-7472-45d5-944c-413b79314aa9
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+1732850952324	geckodriver	INFO	Listening on 127.0.0.1:44057
+1732850952892	mozrunner::runner	INFO	Running command: MOZ_CRASHREPORTER="1" MOZ_CRASHREPORTER_NO_REPORT="1" MOZ_CRASHREPORTER_SHUTDOWN="1" MOZ_NO_REMOTE="1" "/usr ... te" "--remote-debugging-port" "44681" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofilemhRDUw"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1732850953350	Marionette	INFO	Marionette enabled
+1732850953475	Marionette	INFO	Listening on port 40745
+WebDriver BiDi listening on ws://127.0.0.1:44681
+Read port: 40745
+1732850953605	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+JavaScript error: resource://gre/modules/XULStore.sys.mjs, line 60: Error: Can't find profile directory.
+DevTools listening on ws://127.0.0.1:44681/devtools/browser/08f980af-67d8-429d-aa9c-a12047c68296
+1732850983397	addons.xpi	ERROR	System addon update list error SyntaxError: XMLHttpRequest.open: 'http://%(server)s/dummy-system-addons.xml' is not a valid URL.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
