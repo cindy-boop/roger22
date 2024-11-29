@@ -1,0 +1,9 @@
+{"timestamp":7730262,"category":"nimbus_events","name":"enrollment","extra":{"experiment":"add-an-image-to-pdf-with-alt-text-rollout","branch":"control","experiment_type":"rollout"}}
+{"timestamp":7730285,"category":"nimbus_events","name":"enrollment","extra":{"branch":"enable-csv-import","experiment":"csv-import-release-rollout","experiment_type":"rollout"}}
+{"timestamp":7730298,"category":"nimbus_events","name":"enrollment","extra":{"experiment":"ech-roll-out","experiment_type":"rollout","branch":"rollout"}}
+{"timestamp":7730315,"category":"nimbus_events","name":"enrollment","extra":{"experiment_type":"nimbus","branch":"control","experiment":"firefox-accounts-toolbar-button-default-visibility-new-users-part-3"}}
+{"timestamp":7730701,"category":"nimbus_events","name":"enrollment","extra":{"branch":"control","experiment":"spocs-endpoint-rollout-release","experiment_type":"rollout"}}
+{"timestamp":7730726,"category":"nimbus_events","name":"enrollment","extra":{"experiment":"upgrade-spotlight-rollout","experiment_type":"rollout","branch":"treatment"}}
+{"timestamp":7730728,"category":"nimbus_events","name":"validation_failed","extra":{"feature":"accessibilityCache","experiment":"next-generation-accessibility-engine-powering-screen-readers","reason":"invalid-feature"}}
+{"timestamp":7758723,"category":"nimbus_events","name":"validation_failed","extra":{"reason":"invalid-feature","feature":"accessibilityCache","experiment":"next-generation-accessibility-engine-powering-screen-readers"}}
+{"timestamp":7860248,"category":"nimbus_events","name":"exposure","extra":{"experiment":"firefox-accounts-toolbar-button-default-visibility-new-users-part-3","branch":"control","feature_id":"fxms-message-6"}}

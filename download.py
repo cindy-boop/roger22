@@ -55,7 +55,11 @@ def ini_logger(title: str) -> logging.Logger:
 def get_page_source(url: str = "https://google.com"):
     # Set up the WebDriver for Firefox
     options = Options()
-    options.add_argument("-private")
+    # options.add_argument("-private")
+
+    # Use a specific Firefox profile
+    # if profile_path:
+    options.set_preference("profile", os.path.join(os.getcwd(), "hasibuansiana"))
     # Uncomment the line below if you want to run in headless mode
     # options.add_argument("--headless")
 
@@ -146,10 +150,45 @@ def store_slug(slug):
 #                 log.warning(f"Waiting for download link for {slug}...")
 #                 time.sleep(5)  # Wait before trying again
 
-def download_files(download_urls, slugs, driver):
+def download(urls: list):
+    log = ini_logger("downloading")
+    for url in urls:
+        for slug, download_link in url.items():
+            try:
+                filename = f"{slug}.mp4"
+                result = os.system(
+                    f"bash mcurl.sh -s 16 -o '{filename}' '{download_link}'"
+                )
+
+                if result == 0:
+                    log.info(f"Downloaded: {filename}")
+                    store_slug(slug)  # Store the slug after successful download
+                    # Start the upload script
+                    process = subprocess.Popen(["python", "upload.py", filename])
+
+                    # Wait for a short time to check if the process has started
+                    time.sleep(1)  # Adjust the sleep time as necessary
+
+                    # Check if the process is still running
+                    if process.poll() is None:
+                        log.info("Upload script started successfully.")
+                    else:
+                        time.sleep(5)
+                        log.error("Failed to start upload script.")
+                        break
+
+                else:
+                    log.error(f"Download failed for {slug} with status: {result}")
+                    store_slug(slug)
+            except Exception as e:
+                log.error(e)
+
+def get_download_urls(download_urls, slugs, driver):
     """Download the files using the given download URLs."""
 
-    log = ini_logger('DOWNLOAD')
+    log = ini_logger('get download url')
+
+    urls = []
     for download_url, slug in zip(download_urls, slugs):
         filemoon_download_url = download_url.replace("filemoon.in", "filemoon.sx")
         driver.get(filemoon_download_url)
@@ -173,47 +212,22 @@ def download_files(download_urls, slugs, driver):
 
                 log.info(f"Download link appeared for {slug}.")
                 download_link = element.get_attribute("href")
-                filename = f"{slug}.mp4"
 
-                # Execute the download command
-                result = os.system(
-                    f"bash mcurl.sh -s 16 -o '{filename}' '{download_link}'"
-                )
-
-                if result == 0:
-                    log.info(f"Downloaded: {filename}")
-                    store_slug(slug)  # Store the slug after successful download
-                    # Start the upload script
-                    process = subprocess.Popen(["python", "upload.py", filename])
-
-                    # Wait for a short time to check if the process has started
-                    time.sleep(1)  # Adjust the sleep time as necessary
-
-                    # Check if the process is still running
-                    if process.poll() is None:
-                        log.info("Upload script started successfully.")
-                    else:
-                        time.sleep(5)
-                        log.error("Failed to start upload script.")
-                        break
-                        # Handle the error as needed
-
-                    # Continue with the rest of your code here
-
-                else:
-                    log.error(f"Download failed for {slug} with status: {result}")
-                    store_slug(slug)
+                urls.append({slug: download_link})
+  
 
                 break  # Exit the loop if the element is found
             except Exception as e:
                 log.warning(f"Lagi nungguin download link nya {slug}")
 
+        download(urls)
 
-def download():
+def prepare_slug():
     urls = read_urls("downlinks.txt")
     driver = get_page_source()  # Assuming this initializes your Selenium WebDriver
     # driver = None
 
+    log = ini_logger("check download url")
     download_urls = []
     slugs = []
 
@@ -223,17 +237,17 @@ def download():
 
         # Check if the slug already exists
         if slug_exists(slug):
-            print(f"Skipping {slug} (already downloaded).")
+            log.error(f"Skipping {slug} (already downloaded).")
             continue
 
         download_url, telegram_url = get_download_url(urls)
 
         if telegram_url:
-            print(f"Skipping {slug} (Telegram URL found).")
+            log.error(f"Skipping {slug} (Telegram URL found).")
             continue
 
         if download_url:
-            print(f"Processing {slug} ({i}/{len(urls)})...")
+            log.info(f"Processing {slug} ({i}/{len(urls)})...")
             download_urls.append(download_url[0])  # Store the first valid download URL
             slugs.append(slug)  # Store the corresponding slug
 
@@ -242,7 +256,7 @@ def download():
                 print(
                     f"Collected {len(download_urls)} download URLs. Starting downloads..."
                 )
-                download_files(download_urls, slugs, driver)
+                get_download_urls(download_urls, slugs, driver)
                 # Reset the lists after downloading
                 download_urls = []
                 slugs = []
@@ -252,10 +266,12 @@ def download():
     # Check if there are any remaining URLs to download after the loop
     if download_urls:
         print(f"Starting downloads for the last batch of {len(download_urls)} URLs...")
-        download_files(download_urls, slugs, driver)
+        get_download_urls(download_urls, slugs, driver)
 
 
 # Example of how to call the function
 if __name__=="__main__":
-    download()
+    # prepare_slug()
     # store_slug('32018')
+
+    get_page_source()
