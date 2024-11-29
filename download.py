@@ -161,6 +161,7 @@ def download_files(download_urls, slugs, driver):
 
                 else:
                     log.error(f"Download failed for {slug} with status: {result}")
+                    store_slug(slug)
 
                 break  # Exit the loop if the element is found
             except Exception as e:
