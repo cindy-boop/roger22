@@ -158,7 +158,7 @@ def download_files(download_urls, slugs, driver):
                     # Continue with the rest of your code here
                 elif result == 1:
                     store_slug(slug)
-                    
+
                 else:
                     log.error(f"Download failed for {slug} with status: {result}")
 
@@ -213,4 +213,6 @@ def download():
 
 
 # Example of how to call the function
-download()
+if __name__=="__main__":
+    download()
+    # store_slug('32018')
