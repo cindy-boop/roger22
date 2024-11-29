@@ -55,11 +55,11 @@ def ini_logger(title: str) -> logging.Logger:
 def get_page_source(url: str = "https://google.com"):
     # Set up the WebDriver for Firefox
     options = Options()
-    # options.add_argument("-private")
+    options.add_argument("-private")
 
     # Use a specific Firefox profile
     # if profile_path:
-    options.set_preference("profile", os.path.join(os.getcwd(), "hasibuansiana"))
+    # options.set_preference("profile", os.path.join(os.getcwd(), "hasibuansiana"))
     # Uncomment the line below if you want to run in headless mode
     # options.add_argument("--headless")
 
@@ -278,7 +278,7 @@ def prepare_slug():
 
 # Example of how to call the function
 if __name__=="__main__":
-    # prepare_slug()
+    prepare_slug()
     # store_slug('32018')
 
-    get_page_source()
+    # get_page_source()
