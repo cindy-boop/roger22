@@ -1,5 +1,5 @@
 import undetected_chromedriver as uc
-import bs4, time, os, subprocess, requests, logging
+import bs4, time, os, subprocess, requests, logging, gc
 
 from telethon import TelegramClient, types, events
 
@@ -42,11 +42,11 @@ def ini_logger(title: str) -> logging.Logger:
 
     # create logger with 'spam_application'
     logger = logging.getLogger(title)
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.WARNING)
 
     # create console handler with a higher log level
     ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
+    ch.setLevel(logging.WARNING)
     ch.setFormatter(CustomFormatter())
     logger.addHandler(ch)
 
@@ -56,26 +56,10 @@ def get_page_source(url: str = "https://google.com"):
     # Set up the WebDriver for Firefox
     options = Options()
     options.add_argument("-private")
-
-    # Use a specific Firefox profile
-    # if profile_path:
-    # options.set_preference("profile", os.path.join(os.getcwd(), "hasibuansiana"))
-    # Uncomment the line below if you want to run in headless mode
-    # options.add_argument("--headless")
-
-    # Create a new instance of the Firefox driver
-    d = webdriver.Firefox(service=FirefoxService(), options=options)
-    # d = uc.Chrome(version_main=129)
-    d.get(url)
-    try:
-        WebDriverWait(d, 10).until(
-            lambda d: d.execute_script("return document.readyState") == "complete"
-        )
-
-    except Exception as e:
-        print(f"An error occurred: {e}")
-
-    return d
+    with webdriver.Firefox(service=FirefoxService(), options=options) as d:
+        d.get(url)
+        WebDriverWait(d, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
+        return d  # Return the page source directly
 
 
 def read_urls(file_path):
@@ -183,6 +167,9 @@ def download(urls: list):
             except Exception as e:
                 log.error(e)
 
+            finally:
+                gc.collect()
+
 def get_download_urls(download_urls, slugs, driver):
     """Download the files using the given download URLs."""
 
@@ -225,9 +212,9 @@ def get_download_urls(download_urls, slugs, driver):
             log.info(
                 f"Collected {len(urls)} download URLs. Starting downloads..."
             )
+            del driver
             download(urls)
-            # Reset the lists after downloading
-            urls = []
+            del urls
 
 def prepare_slug():
     urls = read_urls("downlinks.txt")
@@ -279,6 +266,3 @@ def prepare_slug():
 # Example of how to call the function
 if __name__=="__main__":
     prepare_slug()
-    # store_slug('32018')
-
-    # get_page_source()
