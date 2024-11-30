@@ -208,7 +208,7 @@ def get_download_urls(download_urls, slugs, driver):
                 log.warning(f"Lagi nungguin download link nya {slug}")
 
         # Check if we have collected 7 URLs
-        if len(urls) >= 7:
+        if len(urls) >= 14:
             log.info(
                 f"Collected {len(urls)} download URLs. Starting downloads..."
             )
@@ -245,7 +245,7 @@ def prepare_slug():
                 slugs.append(slug)  # Store the corresponding slug
 
                 # Check if we have collected 7 URLs
-                if len(download_urls) >= 7:
+                if len(download_urls) >= 14:
                     print(
                         f"Collected {len(download_urls)} download URLs. Starting downloads..."
                     )
