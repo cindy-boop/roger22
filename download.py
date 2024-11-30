@@ -92,48 +92,6 @@ def store_slug(slug):
         json=params,
     )
 
-# def download_files(download_urls, slugs, driver):
-#     """Download the files using the given download URLs."""
-
-#     log = ini_logger('DOWNLOAD')
-#     for download_url, slug in zip(download_urls, slugs):
-#         filemoon_download_url = download_url.replace("filemoon.in", "filemoon.sx")
-        
-#         # Loop until a valid download URL is retrieved
-#         while True:
-#             result = subprocess.run(["node", "download-script.js", filemoon_download_url], capture_output=True, text=True)
-#             download_url = result.stdout.strip()
-#             log.info("Download URL:", download_url)
-
-#             if download_url:  # Check if a valid download URL is returned
-#                 filename = f"{slug}.mp4"
-
-#                 # Execute the download command
-#                 result = os.system(
-#                     f"bash mcurl.sh -s 16 -o '{filename}' '{download_url}'"
-#                 )
-
-#                 if result == 0:
-#                     log.info(f"Downloaded: {filename}")
-#                     store_slug(slug)  # Store the slug after successful download
-#                     # Start the upload script
-#                     process = subprocess.Popen(["python", "upload.py", filename])
-
-#                     # Wait for a short time to check if the process has started
-#                     time.sleep(1)  # Adjust the sleep time as necessary
-
-#                     # Check if the process is still running
-#                     if process.poll() is None:
-#                         log.info("Upload script started successfully.")
-#                     else:
-#                         time.sleep(5)
-#                         log.error("Failed to start upload script.")
-#                         break
-#                         # Handle the error as needed
-#             else:
-#                 log.warning(f"Waiting for download link for {slug}...")
-#                 time.sleep(5)  # Wait before trying again
-
 def download(urls: list):
     log = ini_logger("downloading")
     for url in urls:
@@ -141,7 +99,7 @@ def download(urls: list):
             try:
                 filename = f"{slug}.mp4"
                 result = os.system(
-                    f"bash mcurl.sh -s 2 -o '{filename}' '{download_link}'"
+                    f"bash mcurl.sh -s 8 -o '{filename}' '{download_link}'"
                 )
 
                 if result == 0:
