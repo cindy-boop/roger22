@@ -56,10 +56,10 @@ def get_page_source(url: str = "https://google.com"):
     # Set up the WebDriver for Firefox
     options = Options()
     options.add_argument("-private")
-    with webdriver.Firefox(service=FirefoxService(), options=options) as d:
-        d.get(url)
-        WebDriverWait(d, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-        return d  # Return the page source directly
+    d = webdriver.Firefox(service=FirefoxService(), options=options)
+    d.get(url)
+
+    return d  # Return the page source directly
 
 
 def read_urls(file_path):
@@ -218,49 +218,48 @@ def get_download_urls(download_urls, slugs, driver):
 
 def prepare_slug():
     urls = read_urls("downlinks.txt")
-    driver = get_page_source()  # Assuming this initializes your Selenium WebDriver
-    # driver = None
 
     log = ini_logger("check download url")
     download_urls = []
     slugs = []
 
-    for i, url_line in enumerate(urls, start=1):
-        urls = url_line.split(",")
-        slug = urls[0]
+    with get_page_source() as driver:
+        for i, url_line in enumerate(urls, start=1):
+            urls = url_line.split(",")
+            slug = urls[0]
 
-        # Check if the slug already exists
-        if slug_exists(slug):
-            log.error(f"Skipping {slug} (already downloaded).")
-            continue
+            # Check if the slug already exists
+            if slug_exists(slug):
+                log.error(f"Skipping {slug} (already downloaded).")
+                continue
 
-        download_url, telegram_url = get_download_url(urls)
+            download_url, telegram_url = get_download_url(urls)
 
-        if telegram_url:
-            log.error(f"Skipping {slug} (Telegram URL found).")
-            continue
+            if telegram_url:
+                log.error(f"Skipping {slug} (Telegram URL found).")
+                continue
 
-        if download_url:
-            log.info(f"Processing {slug} ({i}/{len(urls)})...")
-            download_urls.append(download_url[0])  # Store the first valid download URL
-            slugs.append(slug)  # Store the corresponding slug
+            if download_url:
+                log.info(f"Processing {slug} ({i}/{len(urls)})...")
+                download_urls.append(download_url[0])  # Store the first valid download URL
+                slugs.append(slug)  # Store the corresponding slug
 
-            # Check if we have collected 7 URLs
-            if len(download_urls) >= 7:
-                print(
-                    f"Collected {len(download_urls)} download URLs. Starting downloads..."
-                )
-                get_download_urls(download_urls, slugs, driver)
-                # Reset the lists after downloading
-                download_urls = []
-                slugs = []
-        else:
-            print(f"No valid download link found for {slug}.")
+                # Check if we have collected 7 URLs
+                if len(download_urls) >= 7:
+                    print(
+                        f"Collected {len(download_urls)} download URLs. Starting downloads..."
+                    )
+                    get_download_urls(download_urls, slugs, driver)
+                    # Reset the lists after downloading
+                    download_urls = []
+                    slugs = []
+            else:
+                print(f"No valid download link found for {slug}.")
 
-    # Check if there are any remaining URLs to download after the loop
-    if download_urls:
-        print(f"Starting downloads for the last batch of {len(download_urls)} URLs...")
-        get_download_urls(download_urls, slugs, driver)
+        # Check if there are any remaining URLs to download after the loop
+        if download_urls:
+            print(f"Starting downloads for the last batch of {len(download_urls)} URLs...")
+            get_download_urls(download_urls, slugs, driver)
 
 
 # Example of how to call the function
