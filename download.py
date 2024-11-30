@@ -42,11 +42,11 @@ def ini_logger(title: str) -> logging.Logger:
 
     # create logger with 'spam_application'
     logger = logging.getLogger(title)
-    logger.setLevel(logging.WARNING)
+    logger.setLevel(logging.DEBUG)
 
     # create console handler with a higher log level
     ch = logging.StreamHandler()
-    ch.setLevel(logging.WARNING)
+    ch.setLevel(logging.DEBUG)
     ch.setFormatter(CustomFormatter())
     logger.addHandler(ch)
 
