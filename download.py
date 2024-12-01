@@ -14,6 +14,7 @@ from selenium.webdriver.common.by import By
 api_id = os.getenv("API_ID")
 api_hash = os.getenv("API_HASH")
 
+
 def ini_logger(title: str) -> logging.Logger:
     class CustomFormatter(logging.Formatter):
         GREEN = "\033[32m"
@@ -22,9 +23,7 @@ def ini_logger(title: str) -> logging.Logger:
         red = "\x1b[31;20m"
         bold_red = "\x1b[31;1m"
         reset = "\x1b[0m"
-        format = (
-            "%(asctime)s - %(name)s - %(levelname)s - %(message)s (%(filename)s:%(lineno)d)"
-        )
+        format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s (%(filename)s:%(lineno)d)"
 
         FORMATS = {
             logging.DEBUG: grey + format + reset,
@@ -39,7 +38,6 @@ def ini_logger(title: str) -> logging.Logger:
             formatter = logging.Formatter(log_fmt)
             return formatter.format(record)
 
-
     # create logger with 'spam_application'
     logger = logging.getLogger(title)
     logger.setLevel(logging.DEBUG)
@@ -51,6 +49,7 @@ def ini_logger(title: str) -> logging.Logger:
     logger.addHandler(ch)
 
     return logger
+
 
 def get_page_source(url: str = "https://google.com"):
     # Set up the WebDriver for Firefox
@@ -92,11 +91,13 @@ def store_slug(slug):
         json=params,
     )
 
+
 def download(urls: list):
-    log = ini_logger("downloading")
     for url in urls:
         for slug, download_link in url.items():
             try:
+                log = ini_logger("downloading")
+
                 filename = f"{slug}.mp4"
                 result = os.system(
                     f"bash mcurl.sh -s 8 -o '{filename}' '{download_link}'"
@@ -128,24 +129,23 @@ def download(urls: list):
             finally:
                 gc.collect()
 
+
 def get_download_urls(download_urls, slugs, driver):
     """Download the files using the given download URLs."""
 
-    log = ini_logger('get download url')
-
     urls = []
+    log = ini_logger("DOWNLOAD URL")
     for download_url, slug in zip(download_urls, slugs):
         filemoon_download_url = download_url.replace("filemoon.in", "filemoon.sx")
         driver.get(filemoon_download_url)
         driver.set_window_size(667, 920)
-
-
 
         while True:
             try:
                 # Check if the page title indicates a not found page
                 if "Not Found" in driver.title:
                     log.error(f"Download page not found for {slug}. Skipping.")
+                    store_slug(slug=slug)
                     break
 
                 # Wait until the download link is present
@@ -159,29 +159,28 @@ def get_download_urls(download_urls, slugs, driver):
                 download_link = element.get_attribute("href")
 
                 urls.append({slug: download_link})
-  
 
                 break  # Exit the loop if the element is found
             except Exception as e:
                 log.warning(f"Lagi nungguin download link nya {slug}")
 
+            finally:
+                gc.collect()
+
         # Check if we have collected 7 URLs
         if len(urls) >= 7:
-            log.info(
-                f"Collected {len(urls)} download URLs. Starting downloads..."
-            )
-            del driver
+            log.info(f"Collected {len(urls)} download URLs. Starting downloads...")
             download(urls)
             del urls
 
+
 def prepare_slug():
     urls = read_urls("downlinks.txt")
-
-    log = ini_logger("check download url")
     download_urls = []
     slugs = []
 
     with get_page_source() as driver:
+        log = ini_logger("COLLECT SLUG")
         for i, url_line in enumerate(urls, start=1):
             urls = url_line.split(",")
             slug = urls[0]
@@ -199,7 +198,9 @@ def prepare_slug():
 
             if download_url:
                 log.info(f"Processing {slug} ({i}/{len(urls)})...")
-                download_urls.append(download_url[0])  # Store the first valid download URL
+                download_urls.append(
+                    download_url[0]
+                )  # Store the first valid download URL
                 slugs.append(slug)  # Store the corresponding slug
 
                 # Check if we have collected 7 URLs
@@ -216,10 +217,12 @@ def prepare_slug():
 
         # Check if there are any remaining URLs to download after the loop
         if download_urls:
-            print(f"Starting downloads for the last batch of {len(download_urls)} URLs...")
+            print(
+                f"Starting downloads for the last batch of {len(download_urls)} URLs..."
+            )
             get_download_urls(download_urls, slugs, driver)
 
 
 # Example of how to call the function
-if __name__=="__main__":
+if __name__ == "__main__":
     prepare_slug()
